@@ -1,0 +1,566 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+
+library(dplyr)
+
+concrete <- read.csv("C:/Users/Tejashwini Saravanan/Copy of Concrete_Data.csv")
+
+str(concrete)
+
+colSums(is.na(concrete))
+
+
+head(concrete)
+
+
+
+
+names(concrete) <- c("Cement", "BlastFurnaceSlag", "FlyAsh", "Water",
+                     "Superplasticizer", "CoarseAggregate", "FineAggregate",
+                     "Age", "CompressiveStrength")
+
+names(concrete)
+
+
+sum(concrete$Superplasticizer == 0)
+
+
+
+
+hist(concrete$CompressiveStrength,
+     main = "Distribution of Compressive Strength",
+     xlab = "Compressive Strength (MPa)",
+     col = "skyblue", border = "white")
+
+
+
+library(corrplot)
+cor_matrix <- cor(concrete)
+corrplot(cor_matrix, method = "color", type = "upper", tl.cex = 0.8)
+
+
+
+model <- lm(CompressiveStrength ~ ., data = concrete)
+summary(model)
+
+
+concrete$predicted <- predict(model)
+
+plot(concrete$CompressiveStrength, concrete$predicted,
+     main = "Actual vs Predicted Compressive Strength",
+     xlab = "Actual", ylab = "Predicted", col = "blue", pch = 16)
+abline(0, 1, col = "red")
+
+
+ggplot(pred_data, aes(x = actual, y = predicted)) + ...
+
+
+
+
+
+plot(concrete$Cement, concrete$CompressiveStrength,
+     main = "Cement vs. Compressive Strength",
+     xlab = "Cement", ylab = "Strength", col = "darkgreen", pch = 16)
+
+
+
+model <- lm(CompressiveStrength ~ ., data = concrete)
+
+
+library(ggplot2)
+library(dplyr)
+library(corrplot)
+
+concrete <- read.csv("C:/Users/Tejashwini Saravanan/Copy of Concrete_Data.csv")
+
+
+
+
+concrete <- read.csv("C:/Users/Tejashwini Saravanan/Copy of Concrete_Data.csv")
+
+str(concrete)        # Structure of the dataset
+summary(concrete)    # Summary statistics for each column
+head(concrete)       # View the first 6 rows
+
+
+
+
+
+colnames(concrete) <- c(
+  "Cement", "BlastFurnaceSlag", "FlyAsh", "Water", "Superplasticizer",
+  "CoarseAggregate", "FineAggregate", "Age", "CompressiveStrength"
+)
+
+str(concrete)
+
+
+
+
+
+colSums(is.na(concrete))
+
+sum(concrete$Superplasticizer == 0)
+
+
+
+
+
+str(concrete)
+colSums(is.na(concrete))
+ 
+
+
+
+library(ggplot2)
+library(reshape2)
+library(corrplot)
+
+par(mfrow = c(3, 3))  # Layout: 3 rows, 3 columns
+for (col in names(concrete)) {
+  hist(concrete[[col]], main = paste("Histogram of", col), col = "skyblue", xlab = col)
+}
+par(mfrow = c(1, 1))  # Reset layout
+
+cor_matrix <- cor(concrete)
+corrplot(cor_matrix, method = "color", type = "upper", tl.col = "black", tl.srt = 45)
+
+
+ggplot(melt(concrete, id.vars = "CompressiveStrength"), 
+       aes(value, CompressiveStrength)) +
+  geom_point(alpha = 0.5, color = "steelblue") +
+  facet_wrap(~ variable, scales = "free_x") +
+  theme_minimal() +
+  labs(title = "Compressive Strength vs. Other Variables",
+       x = "Input Variable Value", y = "Compressive Strength")
+
+
+
+
+model <- lm(CompressiveStrength ~ ., data = concrete)
+
+summary(model)
+
+
+concrete$predicted <- predict(model)
+plot(concrete$CompressiveStrength, concrete$predicted,
+     main = "Actual vs Predicted Compressive Strength",
+     xlab = "Actual", ylab = "Predicted", col = "blue", pch = 16)
+abline(0, 1, col = "red")
+
+summary(model)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+concrete <- read.csv("C:/Users/Tejashwini Saravanan/Copy of Concrete_Data.csv")
+
+
+str(concrete)        
+summary(concrete)    
+head(concrete)       
+
+
+colnames(concrete) <- c(
+  "Cement", "BlastFurnaceSlag", "FlyAsh", "Water", "Superplasticizer",
+  "CoarseAggregate", "FineAggregate", "Age", "CompressiveStrength"
+)
+
+
+str(concrete)
+
+
+
+colSums(is.na(concrete))
+
+sum(concrete$Superplasticizer == 0)
+
+
+
+library(ggplot2)
+library(reshape2)
+library(corrplot)
+
+
+par(mfrow = c(3, 3))  # Layout: 3 rows, 3 columns
+for (col in names(concrete)) {
+  hist(concrete[[col]], main = paste("Histogram of", col), col = "skyblue", xlab = col)
+}
+par(mfrow = c(1, 1))  # Reset layout
+
+
+cor_matrix <- cor(concrete)
+corrplot(cor_matrix, method = "color", type = "upper", tl.col = "black", tl.srt = 45)
+
+
+ggplot(melt(concrete, id.vars = "CompressiveStrength"), 
+       aes(value, CompressiveStrength)) +
+  geom_point(alpha = 0.5, color = "steelblue") +
+  facet_wrap(~ variable, scales = "free_x") +
+  theme_minimal() +
+  labs(title = "Compressive Strength vs. Other Variables",
+       x = "Input Variable Value", y = "Compressive Strength")
+       
+
+
+model <- lm(CompressiveStrength ~ ., data = concrete)
+
+
+summary(model)
+
+
+concrete$predicted <- predict(model)
+plot(concrete$CompressiveStrength, concrete$predicted,
+     main = "Actual vs Predicted Compressive Strength",
+     xlab = "Actual", ylab = "Predicted", col = "blue", pch = 16)
+abline(0, 1, col = "red")
+  
+summary(model)
+
+
+install.packages("shiny")
+
+install.packages("packagename")
+
+
+
+library(shiny)
+
+
+concrete <- read.csv("C:/Users/Tejashwini Saravanan/Copy of Concrete_Data.csv")
+
+
+colnames(concrete) <- c("Cement", "BlastFurnaceSlag", "FlyAsh", "Water", "Superplasticizer",
+                        "CoarseAggregate", "FineAggregate", "Age", "CompressiveStrength")
+
+model <- lm(CompressiveStrength ~ ., data = concrete)
+concrete$predicted <- predict(model)
+
+
+ui <- fluidPage(
+  titlePanel("Concrete Strength Dashboard"),
+  
+  sidebarLayout(
+    sidebarPanel(
+      helpText("Visualize and Analyze Concrete Strength Data")
+    ),
+    
+    mainPanel(
+      tabsetPanel(
+        tabPanel("Histogram - Cement", 
+                 plotOutput("cementHist")),
+        
+        tabPanel("Actual vs Predicted", 
+                 plotOutput("predictedPlot")),
+        
+        tabPanel("Model Summary", 
+                 verbatimTextOutput("modelSummary"))
+      )
+    )
+  )
+)
+
+
+server <- function(input, output) {
+  
+  output$cementHist <- renderPlot({
+    hist(concrete$Cement, main = "Histogram of Cement Quantity", 
+         xlab = "Cement (kg/m^3)", col = "skyblue", border = "white")
+  })
+  
+  output$predictedPlot <- renderPlot({
+    plot(concrete$CompressiveStrength, concrete$predicted,
+         main = "Actual vs Predicted Compressive Strength",
+         xlab = "Actual Strength (MPa)", ylab = "Predicted Strength (MPa)",
+         col = "blue", pch = 16)
+    abline(0, 1, col = "red", lwd = 2)
+  })
+  
+  output$modelSummary <- renderPrint({
+    summary(model)
+  })
+}
+
+shinyApp(ui = ui, server = server)
+
+
+install.packages(c("ggplot2", "plotly", "dplyr", "shinythemes"))
+
+ui <- fluidPage(
+  theme = shinythemes::shinytheme("flatly"),  # Try 'cerulean', 'cosmo', 'slate' too
+  titlePanel("Concrete Compressive Strength Dashboard"),
+  sidebarLayout(
+    sidebarPanel(
+      sliderInput("age", "Age (days):", min = 1, max = 365, value = 28),
+      sliderInput("cement", "Cement (kg/m³):", min = 100, max = 600, value = 300)
+    ),
+    mainPanel(
+      plotlyOutput("scatterPlot"),
+      plotlyOutput("correlationHeatmap")
+    )
+  )
+)
+
+
+
+server <- function(input, output) {
+  # 1. Scatter plot: Cement vs Strength, color by Age
+  output$scatterPlot <- renderPlotly({
+    p <- ggplot(concrete, aes(x = Cement, y = CompressiveStrength, color = Age)) +
+      geom_point(alpha = 0.7) +
+      labs(title = "Cement vs Compressive Strength", x = "Cement (kg/m³)", y = "Strength (MPa)") +
+      theme_minimal()
+    ggplotly(p)
+  })
+
+  # 2. Correlation heatmap
+  output$correlationHeatmap <- renderPlotly({
+    numeric_vars <- concrete %>% select_if(is.numeric)
+    corr_matrix <- round(cor(numeric_vars), 2)
+    heatmap <- plot_ly(
+      x = colnames(corr_matrix),
+      y = rownames(corr_matrix),
+      z = corr_matrix,
+      type = "heatmap",
+      colorscale = "Viridis"
+    )
+    heatmap
+  })
+}
+
+
+install.packages(c("shiny", "ggplot2", "plotly", "dplyr", "shinythemes"))
+
+
+library(shiny)
+library(ggplot2)
+library(plotly)
+library(dplyr)
+library(shinythemes)
+
+concrete <- read.csv("Copy of Concrete_Data.csv")
+
+
+ui <- fluidPage(
+  theme = shinythemes::shinytheme("flatly"),  # Try: "cerulean", "slate", "cosmo", etc.
+  titlePanel("Concrete Compressive Strength Dashboard"),
+
+  sidebarLayout(
+    sidebarPanel(
+      sliderInput("age", "Filter by Age (days):",
+                  min = min(concrete$Age),
+                  max = max(concrete$Age),
+                  value = c(28, 365)),
+      checkboxInput("showCorr", "Show Correlation Heatmap", value = TRUE)
+    ),
+
+    mainPanel(
+      plotlyOutput("scatterPlot"),
+      br(),
+      conditionalPanel(
+        condition = "input.showCorr == true",
+        plotlyOutput("correlationHeatmap")
+      )
+    )
+  )
+)
+
+
+server <- function(input, output) {
+
+  filtered_data <- reactive({
+    concrete %>% filter(Age >= input$age[1], Age <= input$age[2])
+  })
+
+  # 1. Cement vs Strength Scatter Plot
+  output$scatterPlot <- renderPlotly({
+    p <- ggplot(filtered_data(), aes(x = Cement, y = CompressiveStrength, color = Age)) +
+      geom_point(size = 2, alpha = 0.7) +
+      labs(title = "Cement vs Compressive Strength",
+           x = "Cement (kg/m³)",
+           y = "Compressive Strength (MPa)") +
+      theme_minimal()
+    ggplotly(p)
+  })
+
+  # 2. Correlation Heatmap
+  output$correlationHeatmap <- renderPlotly({
+    numeric_vars <- filtered_data() %>% select_if(is.numeric)
+    corr_matrix <- round(cor(numeric_vars), 2)
+
+    plot_ly(
+      x = colnames(corr_matrix),
+      y = rownames(corr_matrix),
+      z = corr_matrix,
+      type = "heatmap",
+      colorscale = "Viridis",
+      reversescale = TRUE
+    ) %>%
+      layout(title = "Correlation Heatmap")
+  })
+}
+
+
+shinyApp(ui = ui, server = server)
+
+
+
+library(shiny)
+library(ggplot2)
+library(plotly)
+library(dplyr)
+library(shinythemes)
+
+
+concrete <- read.csv("Copy of Concrete_Data.csv")
+
+ui <- fluidPage(
+  theme = shinytheme("sandstone"),
+  titlePanel("Concrete Compressive Strength: Interactive Dashboard"),
+
+  sidebarLayout(
+    sidebarPanel(
+      sliderInput("ageRange", "Select Age Range (days):",
+                  min = min(concrete$Age), max = max(concrete$Age),
+                  value = c(28, 365)),
+      selectInput("xvar", "X-axis Variable:",
+                  choices = names(concrete)[1:8], selected = "Cement"),
+      selectInput("yvar", "Y-axis Variable:",
+                  choices = names(concrete)[1:8], selected = "CompressiveStrength"),
+      checkboxInput("showCorr", "Show Correlation Heatmap", TRUE),
+      width = 3
+    ),
+
+    mainPanel(
+      tabsetPanel(
+        tabPanel("Scatter Plot", plotlyOutput("scatterPlot")),
+        tabPanel("Box Plot", plotlyOutput("boxPlot")),
+        tabPanel("Correlation Heatmap", plotlyOutput("correlationHeatmap"))
+      )
+    )
+  )
+)
+
+server <- function(input, output) {
+  filtered_data <- reactive({
+    concrete %>%
+      filter(Age >= input$ageRange[1], Age <= input$ageRange[2])
+  })
+
+  output$scatterPlot <- renderPlotly({
+    p <- ggplot(filtered_data(), aes_string(x = input$xvar, y = input$yvar)) +
+      geom_point(aes(color = Age), size = 3, alpha = 0.8) +
+      labs(title = paste(input$yvar, "vs", input$xvar),
+           x = input$xvar, y = input$yvar) +
+      theme_minimal(base_size = 14)
+    ggplotly(p)
+  })
+
+  output$boxPlot <- renderPlotly({
+    p <- ggplot(filtered_data(), aes_string(x = "factor(Age)", y = input$yvar)) +
+      geom_boxplot(fill = "skyblue", color = "darkblue") +
+      labs(title = paste("Boxplot of", input$yvar, "by Age"),
+           x = "Age (days)", y = input$yvar) +
+      theme_minimal(base_size = 14)
+    ggplotly(p)
+  })
+
+  output$correlationHeatmap <- renderPlotly({
+    req(input$showCorr)
+    corr_data <- filtered_data() %>% select_if(is.numeric)
+    corr_matrix <- round(cor(corr_data), 2)
+    plot_ly(
+      x = colnames(corr_matrix),
+      y = rownames(corr_matrix),
+      z = corr_matrix,
+      type = "heatmap",
+      colorscale = "YlGnBu"
+    ) %>% layout(title = "Correlation Heatmap")
+  })
+}
+
+shinyApp(ui = ui, server = server)
+
+
+getwd()
+
+
+theme = shinytheme("flatly")
+
+
+library(ggplot2)
+library(plotly)
+
+concrete <- read.csv("Copy of Concrete_Data.csv")
+
+
+ggplot(concrete, aes(x = Cement, y = CompressiveStrength, color = Age)) +
+  geom_point(size = 3, alpha = 0.7) +
+  geom_smooth(method = "loess", se = FALSE, color = "darkred", size = 1.5) +
+  scale_color_viridis_c() +
+  theme_minimal(base_size = 15) +
+  labs(
+    title = "Cement vs Compressive Strength",
+    subtitle = "Colored by Age of Concrete",
+    x = "Cement (kg/m³)",
+    y = "Compressive Strength (MPa)"
+  )
+  
+  ggplotly(last_plot())
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+concrete <- read.csv("C:/Users/Tejashwini Saravanan/Copy of Concrete_Data.csv")
+
+str(concrete)        # Structure of the dataset
+summary(concrete)    # Summary statistics for each column
+head(concrete)       # View the first 6 rows
+
+
+
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+plot(cars)
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
