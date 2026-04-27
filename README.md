@@ -1,44 +1,152 @@
-<div align="center">
+# Concrete Compressive Strength: Predictive Analytics & Interactive R Shiny Dashboard
 
-<h1>Concrete Compressive Strength</h1>
+An end-to-end data analytics project in R that cleans and explores material science data, builds predictive linear regression models, and delivers real-time decision support through an interactive Shiny dashboard. Built for civil engineers and construction managers who need to understand which mix design variables drive concrete strength - without running a statistical model themselves.
 
-<p>Predicting structural concrete strength from mix composition using regression modelling and an interactive R Shiny decision dashboard.</p>
+<p align="center">
+  <a href="Project_Documentation.pdf">View Project Documentation</a> · <a href="dashboard_walkthrough.mp4">Watch Dashboard Walkthrough</a> · <a href="https://tejashwinisaravanan.github.io/concrete-strength-dashboard-r-shiny/">View GitHub Pages</a>
+</p>
 
-<br/>
+<p align="center">
+  <img src="images/slide-kpi-cards.jpg" width="680" alt="Shiny Dashboard KPI Cards showing Average Strength, Max Strength, and Filtered Mixes"/>
+</p>
 
-![R](https://img.shields.io/badge/R-276DC3?style=flat-square&logo=r&logoColor=white)
-![Shiny](https://img.shields.io/badge/Shiny-0078D4?style=flat-square)
-![ggplot2](https://img.shields.io/badge/ggplot2-E74C3C?style=flat-square)
-![tidyverse](https://img.shields.io/badge/tidyverse-276DC3?style=flat-square)
-![License](https://img.shields.io/badge/License-MIT-black?style=flat-square)
-![Dataset](https://img.shields.io/badge/Dataset-UCI%20ML%20Repository-orange?style=flat-square)
-
-</div>
-
-<br/>
+<p align="center"><em>The live Shiny dashboard - KPI cards update in real time as users adjust the Age and Cement Content sliders.</em></p>
 
 ---
 
-Concrete compressive strength determines whether a structure stands or fails. Engineers need to know - before pouring - whether a given mix of cement, water, aggregates, and supplementary binders will meet the required load-bearing threshold. Getting that prediction wrong in either direction has real consequences: too weak and the structure is unsafe, too conservative and material cost climbs unnecessarily.
+## Overview
 
-This project builds an end-to-end predictive analytics solution on 1,030 real laboratory mix experiments. It moves from raw data inspection through feature engineering, exploratory analysis, and regression modelling, and delivers the findings through a fully interactive Shiny dashboard where any engineer can adjust mix parameters in real time and immediately see how strength, sample count, and ingredient relationships respond.
+Concrete compressive strength is determined by a complex interaction of mix design variables - cement content, water-cement ratio, curing age, supplementary materials like fly ash and blast furnace slag, and aggregate composition. Understanding which variables matter most, and by how much, is critical for structural engineers making mix design decisions under cost and safety constraints.
+
+The challenge is that this knowledge is buried in raw data. A dataset of 1,030 concrete mix experiments with nine variables tells you nothing useful until it is cleaned, explored, modeled, and made interactive. This project does all four steps in R, culminating in a Shiny dashboard that lets any user adjust mix parameters and see filtered results update in real time - no statistical knowledge required.
+
+The same analytical pattern - cleaning messy experimental data, building regression models to identify key drivers, and delivering findings through an interactive interface - applies directly to clinical data in healthcare. Drug dosage optimization, patient outcome prediction, and treatment efficacy analysis all follow the same workflow, just with medical variables instead of construction materials.
 
 ---
 
-## Table of Contents
+## The Data
 
-- [Repository Structure](#repository-structure)
-- [Dataset](#dataset)
-- [Step 1 — Data Loading and Exploration](#step-1--data-loading-and-exploration)
-- [Step 2 — Cleaning and Feature Engineering](#step-2--cleaning-and-feature-engineering)
-- [Step 3 — Exploratory Data Analysis](#step-3--exploratory-data-analysis)
-- [Step 4 — Regression Modelling](#step-4--regression-modelling)
-- [Step 5 — Shiny Dashboard](#step-5--shiny-dashboard)
-- [Findings and Recommendations](#findings-and-recommendations)
-- [Future Work](#future-work)
-- [Getting Started](#getting-started)
-- [Technology Stack](#technology-stack)
-- [Author](#author)
+| | |
+|---|---|
+| Dataset | UCI Concrete Compressive Strength Dataset |
+| Records | 1,030 concrete mix experiments |
+| Target Variable | Compressive Strength (MPa) |
+| Predictor Variables | Cement, Blast Furnace Slag, Fly Ash, Water, Superplasticizer, Coarse Aggregate, Fine Aggregate, Age |
+| Engineered Feature | Water-Cement Ratio (Water / Cement) |
+| Tool | R, Shiny, ggplot2, tidyverse, shinydashboard |
+
+---
+
+## Project Walkthrough
+
+### Stage 1 - Data Loading and Exploration
+
+<p align="center">
+  <img src="images/slide-load-explore.jpg" width="620" alt="Data loading and initial exploration output"/>
+</p>
+
+<p align="center"><em>Initial data load - column renaming, structure inspection, and summary statistics to understand the range and distribution of each mix variable before any analysis.</em></p>
+
+The raw dataset uses generic column headers. The first step was renaming all nine columns to meaningful engineering terms - Cement, BlastFurnaceSlag, FlyAsh, Water, Superplasticizer, CoarseAggregate, FineAggregate, Age, and CompressiveStrength. Clear naming matters in any analytical project: it prevents misinterpretation downstream and makes the code readable by domain experts who are not statisticians.
+
+---
+
+### Stage 2 - Data Cleaning and Preparation
+
+<p align="center">
+  <img src="images/slide-clean-prepare.jpg" width="620" alt="Data cleaning steps including missing value checks and feature engineering"/>
+</p>
+
+<p align="center"><em>Cleaning pipeline - missing value assessment, outlier inspection, and feature engineering of the Water-Cement Ratio variable.</em></p>
+
+The Water-Cement Ratio (WC Ratio) was engineered as a derived feature by dividing Water by Cement content. This is standard practice in civil engineering - the WC Ratio is one of the most established predictors of concrete strength in the construction industry, and encoding it explicitly allows the model to capture this domain relationship directly rather than leaving it implicit in the raw variables.
+
+The dataset required checking for structural anomalies - records where supplementary materials like Fly Ash or Blast Furnace Slag are zero are valid observations representing plain cement mixes, not missing data. Distinguishing between genuine zeros and missing values is a domain knowledge decision that affects model quality.
+
+---
+
+### Stage 3 - Exploratory Data Analysis
+
+<p align="center">
+  <img src="images/slide-eda.jpg" width="620" alt="EDA visualizations showing relationships between mix variables and compressive strength"/>
+</p>
+
+<p align="center"><em>EDA plots - strength vs Age, strength vs WC Ratio, strength vs Cement content, and strength vs Fly Ash. Each relationship is visualized with a regression trend line to surface directionality before formal modeling.</em></p>
+
+Four key relationships emerged from EDA:
+
+**Age and strength** show a clear positive relationship - concrete continues gaining strength over time as cement hydration progresses. This is a well-known material science phenomenon, but quantifying the rate of gain across the full 1-365 day range in this dataset allows the model to capture non-linearity in early vs. late curing.
+
+**Water-Cement Ratio and strength** show a negative relationship - higher WC ratios produce weaker concrete by increasing porosity. This is the most important mix design trade-off in structural concrete: water is needed for workability but excess water reduces final strength.
+
+**Cement content and strength** show a positive relationship - higher cement concentrations generally produce stronger mixes, though diminishing returns appear at very high cement contents.
+
+**Fly Ash** shows a more complex pattern - it acts as a partial cement replacement that can improve long-term strength while reducing cost, but its effect is highly dependent on curing age.
+
+---
+
+### Stage 4 - Predictive Modeling
+
+A linear regression model was built using all eight mix variables plus the engineered WC Ratio to predict compressive strength. Linear regression was chosen as the primary model for interpretability - the standardized coefficients directly quantify each variable's contribution to strength, which is actionable for mix design decisions in a way that black-box models are not.
+
+Key predictors in order of significance:
+
+- **Age** - strongest positive predictor, confirming that curing time is the single most influential variable on final strength
+- **Cement** - positive effect, consistent with EDA findings
+- **Superplasticizer** - positive effect, as it allows lower water content while maintaining workability
+- **Water-Cement Ratio** - negative effect, the most important mix design constraint
+- **Blast Furnace Slag** - positive effect at longer curing ages
+
+The model results are documented in full in the R Markdown report (`concrete_analysis_report.Rmd`) which knits to a reproducible HTML output covering all cleaning steps, model summary, diagnostic plots, and interpretation.
+
+---
+
+### Stage 5 - Interactive Shiny Dashboard
+
+<p align="center">
+  <img src="images/slide-viz1.jpg" width="620" alt="Shiny dashboard visualization panels showing strength vs Age and WC Ratio"/>
+</p>
+
+<p align="center"><em>Dashboard visualization panels - Strength vs Age (top left), Strength vs WC Ratio (top right), Strength vs Cement (bottom left), Strength vs Fly Ash (bottom right). All plots update reactively when sliders are adjusted.</em></p>
+
+<p align="center">
+  <img src="images/slide-viz2.jpg" width="620" alt="Heatmap showing interaction between Age and Cement Content on Compressive Strength"/>
+</p>
+
+<p align="center"><em>The Age vs Cement heatmap - the viridis color scale maps compressive strength across the two most influential continuous variables simultaneously, revealing the interaction effect that individual scatter plots cannot show.</em></p>
+
+The dashboard is built in R Shiny with `shinydashboard` and `ggplot2`. The architecture separates UI and server logic cleanly - the UI defines two sidebar sliders and five visualization panels, and the server uses a single reactive data frame that recalculates whenever either slider moves, feeding all five outputs simultaneously.
+
+**Age slider** - filters the dataset to any sub-range of the 1-365 day curing period. A structural engineer evaluating early-strength mixes (3-7 days) sees completely different trends than one evaluating long-term performance (90-365 days).
+
+**Cement Content slider** - filters by cement concentration in kg/m³. This allows comparison of low-cement and high-cement mixes side by side, directly supporting mix design optimization decisions.
+
+**Three KPI cards** update reactively: Average Strength (MPa), Maximum Strength (MPa), and Filtered Mix Count. These give an immediate quantitative summary before the user reads any chart.
+
+**Five reactive visualizations:**
+- Strength vs Age with linear regression trend line
+- Strength vs Water-Cement Ratio with LOESS smoothing (non-parametric, to capture the non-linear WC ratio relationship)
+- Strength vs Cement with linear trend
+- Strength vs Fly Ash with linear trend
+- Age vs Cement Heatmap with viridis color scale mapping compressive strength
+
+The LOESS smoother on the WC Ratio plot was a deliberate choice over a linear trend line - the relationship between water-cement ratio and strength is known to be non-linear, and forcing a straight line would misrepresent the underlying material science.
+
+---
+
+## Recommendations
+
+<p align="center">
+  <img src="images/slide-recommendations.jpg" width="620" alt="Recommendations slide summarizing actionable mix design guidance"/>
+</p>
+
+<p align="center"><em>Actionable recommendations derived from the regression model and EDA - targeted at mix design engineers and construction project managers.</em></p>
+
+**Minimize the Water-Cement Ratio.** The WC Ratio is the most controllable negative predictor of strength. Superplasticizers allow engineers to reduce water content while maintaining workability - the data supports using superplasticizer additions as a mechanism to achieve low WC ratios without sacrificing the pourable consistency needed during placement.
+
+**Plan for curing time in structural applications.** Age is the strongest positive predictor in the model. Mix designs for structural elements that will carry load early - bridge decks, precast elements, fast-track construction - should use higher cement content and superplasticizer to compensate for shorter curing windows.
+
+**Use Fly Ash strategically.** Fly Ash contributes to long-term strength while reducing cement cost and carbon footprint. The data supports its use in non-structural or delayed-load applications where curing time exceeds 28 days.
 
 ---
 
@@ -47,465 +155,63 @@ This project builds an end-to-end predictive analytics solution on 1,030 real la
 ```
 concrete-strength-dashboard-r-shiny/
 │
-├── concrete_strength_dashboard.R             # Shiny dashboard — ui and server
-├── concrete_analysis_report.Rmd              # Full analysis notebook
-├── concrete_data.xls                         # Source dataset — 1,030 experiments
-├── Project_Documentation.pdf                 # Project documentation and slides
-├── dashboard_walkthrough.mp4                 # Recorded dashboard walkthrough
-├── LICENSE
+├── images/
+│   ├── slide-kpi-cards.jpg             # Dashboard KPI cards screenshot
+│   ├── slide-load-explore.jpg          # Data loading and exploration
+│   ├── slide-clean-prepare.jpg         # Cleaning and feature engineering
+│   ├── slide-eda.jpg                   # EDA visualizations
+│   ├── slide-viz1.jpg                  # Dashboard scatter plots
+│   ├── slide-viz2.jpg                  # Age vs Cement heatmap
+│   ├── slide-objective-dataset.jpg     # Project objective and dataset overview
+│   └── slide-recommendations.jpg      # Final recommendations
 │
-└── images/
-    ├── slide-objective-dataset.jpg
-    ├── slide-load-explore.jpg
-    ├── slide-clean-prepare.jpg
-    ├── slide-eda.jpg
-    ├── slide-kpi-cards.jpg
-    ├── slide-viz1.jpg
-    ├── slide-viz2.jpg
-    └── slide-recommendations.jpg
+├── concrete_strength_dashboard.R       # Full Shiny app - UI and server logic
+├── concrete_analysis_report.Rmd        # R Markdown report - cleaning, EDA, modeling
+├── concrete_data.xls                   # Raw UCI concrete dataset (1,030 records)
+├── dashboard_walkthrough.mp4           # Full video walkthrough of the dashboard
+├── Project_Documentation.pdf          # Complete project documentation
+└── README.md
 ```
-
----
-
-## Dataset
-
-<div align="center">
-<img src="images/slide-objective-dataset.jpg" width="480"/>
-<br/>
-<sub>Dataset overview — 1,030 concrete mix experiments, 8 input features, 1 target</sub>
-</div>
-
-<br/>
-
-The source is the **UCI Concrete Compressive Strength** dataset compiled by I-Cheng Yeh. Every row is one laboratory experiment — a concrete mix whose ingredients were recorded at the time of batching and whose compressive strength was measured after a specified curing period. No missing values. No synthetic data.
-
-| Feature | Description | Unit |
-|:--------|:------------|:----:|
-| `Cement` | Portland cement — primary binding agent | kg/m³ |
-| `BlastFurnaceSlag` | Industrial by-product — supplementary binder | kg/m³ |
-| `FlyAsh` | Coal combustion residue — reduces water demand | kg/m³ |
-| `Water` | Water content of the mix | kg/m³ |
-| `Superplasticizer` | Chemical additive — improves workability at low W/C | kg/m³ |
-| `CoarseAggregate` | Gravel or crushed stone | kg/m³ |
-| `FineAggregate` | Sand | kg/m³ |
-| `Age` | Curing age at time of strength test | days |
-| `CompressiveStrength` | **Target variable** — measured structural strength | MPa |
-
-**Dataset characteristics at a glance:**
-
-| Metric | Value |
-|:-------|:------|
-| Total observations | 1,030 |
-| Missing values | 0 |
-| Strength range | 2.33 — 82.6 MPa |
-| Age range | 1 — 365 days |
-| Engineered feature added | `WC_Ratio` = Water / Cement |
-
----
-
-## Step 1 — Data Loading and Exploration
-
-<div align="center">
-<img src="images/slide-load-explore.jpg" width="480"/>
-<br/>
-<sub>Initial data inspection — structure, types, and summary statistics in RStudio</sub>
-</div>
-
-<br/>
-
-The first objective was to understand the dataset as-is, before any transformation. The Excel file was converted to CSV and loaded into R. Three diagnostic functions were run immediately: `str()` to inspect column types and dimensions, `summary()` to check the range and distribution of each variable, and `colSums(is.na())` to confirm completeness.
-
-```r
-library(dplyr)
-
-concrete <- read.csv("concrete_data.csv")
-
-str(concrete)
-summary(concrete)
-head(concrete)
-colSums(is.na(concrete))
-```
-
-**What the inspection revealed:**
-
-| Check | Finding | Action |
-|:------|:--------|:-------|
-| Column types | All nine columns numeric | No type conversion needed |
-| Missing values | Zero across all columns | No imputation required |
-| `FlyAsh` minimum | 0.0 — many mixes used none | Structural zero, not an error |
-| `BlastFurnaceSlag` minimum | 0.0 — same pattern | Retained as-is |
-| `Age` distribution | Heavy concentration at 28 days | Expected — standard curing benchmark |
-| Strength range | 2.33 to 82.6 MPa | Wide variation confirms diverse mix designs |
-
-The zero-minimum values in `FlyAsh` and `BlastFurnaceSlag` are legitimate. In concrete practice, supplementary cementitious materials are optional — many standard mixes use neither. Treating these as anomalies would corrupt the analysis.
-
----
-
-## Step 2 — Cleaning and Feature Engineering
-
-<div align="center">
-<img src="images/slide-clean-prepare.jpg" width="480"/>
-<br/>
-<sub>Column renaming, zero-value investigation, and Water-Cement Ratio engineering</sub>
-</div>
-
-<br/>
-
-Three targeted cleaning operations were performed before analysis began.
-
-**Column renaming.** The original CSV inherited generic header names from the Excel export. All nine columns were renamed in a single assignment to match standard concrete science terminology, ensuring consistency across all downstream code.
-
-```r
-colnames(concrete) <- c(
-  "Cement", "BlastFurnaceSlag", "FlyAsh", "Water",
-  "Superplasticizer", "CoarseAggregate", "FineAggregate",
-  "Age", "CompressiveStrength"
-)
-```
-
-**Zero-value audit on Superplasticizer.** A targeted check confirmed that 379 of the 1,030 mixes contained no superplasticizer. This is not a recording error — superplasticizer is an optional admixture used specifically when a low water-cement ratio is required without losing workability. All 379 rows were retained.
-
-```r
-sum(concrete$Superplasticizer == 0)
-# 379 — structurally valid zeros, not missing data
-```
-
-**Feature engineering — Water-Cement Ratio.** The W/C ratio is the single most discussed predictor in concrete mix design literature. A lower ratio means less excess water relative to cement, which produces denser hydration products and higher strength. This was added as a derived column using `mutate()`.
-
-```r
-concrete <- concrete %>%
-  mutate(WC_Ratio = Water / Cement)
-```
-
-The dataset was now clean, consistently labelled, and augmented with a domain-informed feature — no rows removed, no values imputed.
-
----
-
-## Step 3 — Exploratory Data Analysis
-
-<div align="center">
-<img src="images/slide-eda.jpg" width="480"/>
-<br/>
-<sub>Distribution histograms, correlation heatmap, and Cement vs. Strength scatter plot</sub>
-</div>
-
-<br/>
-
-EDA was conducted across three layers — distributions, correlations, and pairwise relationships — to build an evidence-based understanding of which variables drive strength and how they relate to each other.
-
-**Distribution histograms** across all nine variables were plotted in a 3x3 grid. Three structural patterns emerged: `CompressiveStrength` showed a right skew concentrated between 20 and 50 MPa; `Age` was heavily peaked at 28 days with sparse observations at higher values; and `FlyAsh` and `BlastFurnaceSlag` were both zero-inflated, consistent with the earlier inspection.
-
-```r
-par(mfrow = c(3, 3))
-for (col in names(concrete)) {
-  hist(concrete[[col]],
-       main = paste("Distribution of", col),
-       col = "skyblue", xlab = col, border = "white")
-}
-par(mfrow = c(1, 1))
-```
-
-**Correlation matrix** was computed and visualised using `corrplot`. The heatmap confirmed the following relationships:
-
-| Variable | Correlation with Strength | Direction |
-|:---------|:--------------------------|:----------|
-| `Cement` | Strongest | Positive |
-| `Age` | Second strongest | Positive |
-| `Water` | Moderate | Negative |
-| `WC_Ratio` | Moderate | Negative |
-| `Superplasticizer` | Weak-moderate | Positive |
-| `CoarseAggregate`, `FineAggregate` | Weak | Mixed |
-
-```r
-library(corrplot)
-cor_matrix <- cor(concrete)
-corrplot(cor_matrix, method = "color", type = "upper",
-         tl.col = "black", tl.srt = 45)
-```
-
-Potential multicollinearity was noted between the aggregate variables, flagged as a consideration for the regression step.
-
-**Faceted scatter plots** confirmed the directionality of each relationship across all predictors simultaneously:
-
-```r
-library(ggplot2)
-library(reshape2)
-
-ggplot(melt(concrete, id.vars = "CompressiveStrength"),
-       aes(value, CompressiveStrength)) +
-  geom_point(alpha = 0.4, color = "steelblue", size = 0.8) +
-  facet_wrap(~ variable, scales = "free_x") +
-  theme_minimal() +
-  labs(title = "Compressive Strength vs. All Predictors",
-       x = "Feature Value", y = "Strength (MPa)")
-```
-
-The cement and age scatter plots showed clear upward trends. The water and WC_Ratio plots confirmed the inverse relationship. Fly ash showed a positive but dispersed pattern, consistent with its role as a long-term strength contributor.
-
----
-
-## Step 4 — Regression Modelling
-
-A multiple linear regression model was fitted using all predictor variables, including the engineered `WC_Ratio`. The goal was to quantify the marginal contribution of each ingredient to compressive strength under ceteris paribus conditions, and to establish a predictive baseline for evaluation.
-
-```r
-model <- lm(CompressiveStrength ~ ., data = concrete)
-summary(model)
-```
-
-**Model output:**
-
-| Metric | Value | Interpretation |
-|:-------|:------|:---------------|
-| Adjusted R² | 0.6125 | The model explains 61.25% of variance in strength |
-| Residual Std. Error | 10.4 MPa | Average deviation between actual and predicted values |
-| F-statistic | 204.3 on 8 df | Overall model is highly statistically significant |
-| p-value | < 2.2e-16 | Extremely strong evidence the model has predictive power |
-
-**Variable significance summary:**
-
-| Variable | Significant (p < 0.05) | Direction |
-|:---------|:-----------------------|:----------|
-| `Cement` | Yes | Positive |
-| `BlastFurnaceSlag` | Yes | Positive |
-| `FlyAsh` | Yes | Positive |
-| `Water` | Yes | Negative |
-| `Superplasticizer` | Yes | Positive |
-| `Age` | Yes | Positive |
-| `CoarseAggregate` | No | — |
-| `FineAggregate` | No | — |
-
-The non-significance of the two aggregate variables is consistent with EDA findings. Their relationship with strength is likely non-linear — a limitation of the linear model that motivates the future work section below.
-
-**Actual vs. Predicted diagnostic plot:**
-
-```r
-concrete$predicted <- predict(model)
-
-plot(concrete$CompressiveStrength, concrete$predicted,
-     main = "Actual vs. Predicted Compressive Strength",
-     xlab = "Actual (MPa)", ylab = "Predicted (MPa)",
-     col = "blue", pch = 16, cex = 0.7)
-abline(0, 1, col = "red", lwd = 2)
-```
-
-Points concentrate near the red reference diagonal in the 20–60 MPa range. Scatter widens above 60 MPa, indicating the linear model underestimates strength at the high end — a pattern that is characteristic of non-linear interactions between cement, age, and the supplementary binders that a linear model cannot fully capture.
-
----
-
-## Step 5 — Shiny Dashboard
-
-The Shiny dashboard converts the analysis into an operational decision support tool. Rather than presenting static charts, it allows any user to define a mix configuration through sidebar sliders and immediately see how strength metrics, sample distributions, and ingredient relationships shift across that selection.
-
-The entire reactive layer is driven by a single filtered data object:
-
-```r
-filtered <- reactive({
-  concrete %>%
-    filter(
-      Age     >= input$ageFilter[1],   Age     <= input$ageFilter[2],
-      Cement  >= input$cementRange[1], Cement  <= input$cementRange[2]
-    )
-})
-```
-
-Every output — all three KPI cards and all five charts — is a consumer of `filtered()`. When a slider moves, the reactive graph re-executes only what needs to change.
-
-### Sidebar Inputs
-
-Two range sliders define the active data window:
-
-```r
-sliderInput("ageFilter", "Select Age (days):",
-            min = min(concrete$Age), max = max(concrete$Age),
-            value = c(min(concrete$Age), max(concrete$Age)))
-
-sliderInput("cementRange", "Select Cement Range (kg/m³):",
-            min = floor(min(concrete$Cement)),
-            max = ceiling(max(concrete$Cement)),
-            value = c(min(concrete$Cement), max(concrete$Cement)))
-```
-
-A user asking "what does strength look like for 28-day mixes with cement between 250 and 400 kg/m³?" can answer that question in seconds without writing a single line of code.
-
-### KPI Cards
-
-<div align="center">
-<img src="images/slide-kpi-cards.jpg" width="480"/>
-<br/>
-<sub>Live KPI cards — average strength, max strength, and filtered sample count</sub>
-</div>
-
-<br/>
-
-Three value boxes at the top of the dashboard give instant summary context for the current filter selection:
-
-```r
-output$avg_strength <- renderValueBox({
-  valueBox(round(mean(filtered()$CompressiveStrength), 2),
-           "Avg Strength (MPa)", icon = icon("chart-line"), color = "light-blue")
-})
-
-output$max_strength <- renderValueBox({
-  valueBox(round(max(filtered()$CompressiveStrength), 2),
-           "Max Strength (MPa)", icon = icon("trophy"), color = "green")
-})
-
-output$num_samples <- renderValueBox({
-  valueBox(nrow(filtered()),
-           "Filtered Mixes", icon = icon("flask"), color = "orange")
-})
-```
-
-| Card | What It Communicates |
-|:-----|:--------------------|
-| Average Strength | The expected performance of mixes in the selected range |
-| Max Strength | The upper bound — best-case outcome for that configuration |
-| Filtered Mixes | How many data points back the current statistics — critical for reliability |
-
-### Charts
-
-<div align="center">
-<img src="images/slide-viz1.jpg" width="480"/>
-<br/>
-<sub>Strength vs. Age with linear trend — Strength vs. WC Ratio with LOESS curve</sub>
-</div>
-
-<br/>
-
-<div align="center">
-<img src="images/slide-viz2.jpg" width="480"/>
-<br/>
-<sub>Strength vs. Cement content — Strength vs. Fly Ash contribution</sub>
-</div>
-
-<br/>
-
-Four scatter plots update in real time as the sliders change. Each uses a different trend overlay suited to the nature of the relationship:
-
-| Chart | Trend Method | What It Reveals |
-|:------|:------------|:----------------|
-| Strength vs. Age | Linear (`lm`) | Steady strength gain over curing time — most pronounced in early weeks |
-| Strength vs. WC Ratio | LOESS | Clear inverse curve — lower water-cement ratio produces reliably stronger concrete |
-| Strength vs. Cement | Linear (`lm`) | Positive relationship with diminishing returns above approximately 400 kg/m³ |
-| Strength vs. Fly Ash | Linear (`lm`) | Modest positive trend — fly ash contributes to long-term strength at lower cost |
-
-A full-width **Age x Cement Heatmap** sits below the scatter plots, showing how strength varies across the two-dimensional space of curing time and cement dosage:
-
-```r
-output$heatmap <- renderPlot({
-  ggplot(filtered(), aes(x = Cement, y = Age, fill = CompressiveStrength)) +
-    geom_tile() +
-    scale_fill_viridis_c() +
-    labs(x = "Cement (kg/m³)", y = "Age (days)", fill = "Strength (MPa)") +
-    theme_minimal()
-})
-```
-
-The viridis colour scale makes the pattern legible at a glance: high-age, high-cement mixes cluster in the upper-right with the deepest colours, confirming that the two strongest drivers of strength act additively.
-
----
-
-## Findings and Recommendations
-
-<div align="center">
-<img src="images/slide-recommendations.jpg" width="480"/>
-<br/>
-<sub>Final findings and mix design recommendations</sub>
-</div>
-
-<br/>
-
-The combined evidence from EDA, regression coefficients, and dashboard exploration produces a consistent set of conclusions:
-
-| Finding | Evidence Source | Practical Recommendation |
-|:--------|:---------------|:------------------------|
-| Cement is the primary strength driver | Highest positive coefficient; clearest scatter trend | Increase cement content for stronger mixes — monitor diminishing returns above ~400 kg/m³ |
-| Curing age is equally critical | Second strongest coefficient; steep early-age trend in dashboard | Do not assess strength before 28 days — early measurements systematically underestimate final performance |
-| High water content weakens concrete | Negative WC_Ratio coefficient; confirmed by LOESS curve | Minimise water in the mix and use superplasticizer to preserve workability at lower W/C ratios |
-| Fly ash and slag both contribute positively | Significant positive coefficients for both | These industrial by-products are effective partial cement replacements — they reduce cost, carbon footprint, and water demand without sacrificing long-term strength |
-| Superplasticizer enables strength gains indirectly | Positive significant coefficient | Use superplasticizer to achieve a low W/C ratio in mixes where workability would otherwise require more water |
-| Linear model captures 61% of variance | Adjusted R² = 0.6125 | The model is a reliable baseline but leaves 39% unexplained — likely due to non-linear interactions at high cement and high age combinations |
-
----
-
-## Future Work
-
-The linear regression model is a strong starting point but has identifiable limitations. Three improvements are prioritised:
-
-**Non-linear modelling.** A Random Forest or XGBoost model would capture the interaction effects between age, cement, and the supplementary binders that the linear model cannot represent. The wider prediction scatter above 60 MPa strongly suggests non-linear dynamics in high-strength mixes.
-
-**Extended dashboard controls.** The current filters cover age and cement range. Adding sliders for water content and fly ash dosage would allow users to explore W/C ratio effects directly in the dashboard — closing the gap between the analytical findings and the interactive interface.
-
-**Cost optimisation layer.** Integrating material unit costs per kg/m³ would allow the dashboard to surface not just the strongest mix configuration in a selection, but the most cost-efficient one that still meets a user-defined strength threshold.
 
 ---
 
 ## Getting Started
 
-**Requirements:** R 4.0 or higher, RStudio recommended.
-
-**Install all dependencies in one command:**
-
 ```r
-install.packages(c(
-  "shiny", "shinydashboard", "tidyverse",
-  "ggplot2", "corrplot", "reshape2"
-))
-```
+# Install required packages
+install.packages(c("shiny", "shinydashboard", "tidyverse"))
 
-**To run the Shiny dashboard:**
+# Update the data path in the dashboard script to your local file location
+# Line 4: concrete <- read.csv("your/local/path/to/concrete_data.csv")
 
-```r
-# Place concrete_strength_dashboard.R and concrete_data.csv in the same directory, then:
+# Run the Shiny app
 shiny::runApp("concrete_strength_dashboard.R")
 ```
 
-**To run the full analysis notebook:**
+---
 
-Open `concrete_analysis_report.Rmd` in RStudio, update the `read.csv()` path to point to your local copy of the dataset, then click **Knit** to generate a self-contained HTML report.
+## Limitations and What I Would Do Next
+
+The linear regression model assumes additive effects between variables, but concrete strength involves significant interaction effects - particularly between Age and Cement, and between Water and Superplasticizer. Adding interaction terms or switching to a Random Forest or Gradient Boosting model would improve predictive accuracy and capture these relationships more faithfully.
+
+The current dashboard requires a local data file path. Deploying to shinyapps.io would make the dashboard publicly accessible without requiring R to be installed - the next step for making this genuinely usable by non-technical stakeholders.
+
+A prediction panel would substantially increase the dashboard's decision-support value. Rather than just exploring historical data reactively, a user could input a proposed mix design and receive a predicted compressive strength in real time - the kind of tool a mix design engineer would actually use on a job site.
 
 ---
 
-## Technology Stack
+## Tools and Technologies
 
-| Layer | Tool | Purpose |
-|:------|:-----|:--------|
-| Language | R | Core analysis and modelling |
-| Data wrangling | dplyr, tidyverse | Filtering, mutation, pipes |
-| Visualisation | ggplot2, corrplot | EDA charts, heatmaps, scatter plots |
-| Data reshaping | reshape2 | Long-format conversion for faceted plots |
-| Modelling | base R `lm()` | Multiple linear regression |
-| Dashboard UI | shinydashboard | Layout, sidebar, value boxes |
-| Dashboard server | shiny | Reactive filtering and chart rendering |
-| Reporting | R Markdown | Self-contained analysis notebook |
+R · Shiny · shinydashboard · ggplot2 · tidyverse · R Markdown · Linear Regression · Exploratory Data Analysis
 
 ---
 
-## Documentation and Video
+## About Me
 
-Full methodology notes, model output tables, and the complete project slide deck are in [`Project_Documentation.pdf`](./Project_Documentation.pdf).
+**Tejashwini Saravanan** - Master's student in Data Analytics at Seattle Pacific University, focused on healthcare data engineering, predictive analytics, and interactive data applications.
 
-A recorded walkthrough of the live dashboard — demonstrating the sidebar filters, KPI cards, and all charts in action — is in [`dashboard_walkthrough.mp4`](./dashboard_walkthrough.mp4).
-
----
-
-## Author
-
-<div align="center">
-
-**Tejashwini Saravanan**
-
-post2tejashwini@gmail.com
-
-[![GitHub](https://img.shields.io/badge/GitHub-TejashwiniSaravanan-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/TejashwiniSaravanan)
-
- [LinkedIn](https://www.linkedin.com/in/tejashwinisaravanan/)
-
-</div>
+[LinkedIn](https://www.linkedin.com/in/tejashwinisaravanan/) · [GitHub](https://github.com/TejashwiniSaravanan)
 
 ---
 
-## License
-
-Released under the MIT License. Dataset sourced from the [UCI Machine Learning Repository](https://archive.ics.uci.edu/dataset/165/concrete+compressive+strength). See [LICENSE](./LICENSE) for full terms.
+*Dataset: UCI Concrete Compressive Strength Dataset · Tool: R Shiny · Seattle Pacific University*
